@@ -1,5 +1,5 @@
 #define SECURITY_BITS 192
-#define SQIsign_response_length 288
+#define SQIsign_response_length 320
 #define HASH_ITERATIONS 256
 #define FP_ENCODED_BYTES 48
 #define FP2_ENCODED_BYTES 96
@@ -8,5 +8,5 @@
 #define EC_BASIS_ENCODED_BYTES 288
 #define PUBLICKEY_BYTES 97
 #define SECRETKEY_BYTES 2065
-#define SIGNATURE_BYTES 247
+#define SIGNATURE_BYTES 264
 #define TORSION_challenge_torsion 64

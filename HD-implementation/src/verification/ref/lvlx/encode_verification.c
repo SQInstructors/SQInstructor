@@ -163,7 +163,8 @@ signature_to_bytes(byte_t *enc, const signature_t *sig)
 
     enc = fp2_to_bytes(enc, &sig->E_aux_A);
 
-    *enc++ = sig->resp_length;
+    memcpy(enc, &sig->resp_length, sizeof(uint16_t));
+    enc += sizeof(uint16_t);
 
     size_t nbytes = (SQIsign_response_length + 9) / 8;
     encode_digits(enc, sig->mat_B_aux_can_to_B_aux[0][0], nbytes);
@@ -189,7 +190,8 @@ signature_from_bytes(signature_t *sig, const byte_t *enc)
 
     enc = fp2_from_bytes(&sig->E_aux_A, enc);
 
-    sig->resp_length = *enc++;
+    memcpy(&sig->resp_length, enc, sizeof(uint16_t));
+    enc += sizeof(uint16_t);
 
     size_t nbytes = (SQIsign_response_length + 9) / 8;
     decode_digits(sig->mat_B_aux_can_to_B_aux[0][0], enc, nbytes, NWORDS_ORDER);

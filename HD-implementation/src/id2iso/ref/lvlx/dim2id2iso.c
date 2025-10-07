@@ -7,6 +7,7 @@
 #include <quaternion.h>
 #include <tools.h>
 #include <torsion_constants.h>
+#include <mp.h>
 
 static int
 _fixed_degree_isogeny_impl(quat_left_ideal_t *lideal,
@@ -1109,24 +1110,24 @@ dim2id2iso_ideal_to_isogeny_clapotis(quat_alg_elem_t *beta1,
         copy_curve(&E2_tmp, &E2);
         weil(&w0a, TORSION_EVEN_POWER, &bas0.P, &bas0.Q, &bas0.PmQ, &E0);
         weil(&w1a, TORSION_EVEN_POWER, &basis->P, &basis->Q, &basis->PmQ, &codomain_tmp);
-        digit_t tmp_d[2 * NWORDS_ORDER] = { 0 };
+        digit_t tmp_d[3 * NWORDS_ORDER] = { 0 };
         if (index_order1 != 0) {
             copy_basis(&bas1, &CURVES_WITH_ENDOMORPHISMS[index_order1].basis_even);
             weil(&w0, TORSION_EVEN_POWER, &bas1.P, &bas1.Q, &bas1.PmQ, &E1_tmp);
             ibz_to_digit_array(tmp_d, &CONNECTING_IDEALS[index_order1].norm);
-            fp2_pow_vartime(&test_pow, &w0a, tmp_d, 2 * NWORDS_ORDER);
+            fp2_pow_vartime(&test_pow, &w0a, tmp_d, 3 * NWORDS_ORDER);
             assert(fp2_is_equal(&test_pow, &w0));
         }
         if (index_order2 != 0) {
             copy_basis(&bas2, &CURVES_WITH_ENDOMORPHISMS[index_order2].basis_even);
             weil(&w0, TORSION_EVEN_POWER, &bas2.P, &bas2.Q, &bas2.PmQ, &E2_tmp);
             ibz_to_digit_array(tmp_d, &CONNECTING_IDEALS[index_order2].norm);
-            fp2_pow_vartime(&test_pow, &w0a, tmp_d, 2 * NWORDS_ORDER);
+            fp2_pow_vartime(&test_pow, &w0a, tmp_d, 3 * NWORDS_ORDER);
             assert(fp2_is_equal(&test_pow, &w0));
         }
         ibz_to_digit_array(tmp_d, &lideal->norm);
-        fp2_pow_vartime(&test_pow, &w0a, tmp_d, 2 * NWORDS_ORDER);
-        assert(fp2_is_equal(&test_pow, &w1a));
+        fp2_pow_vartime(&test_pow, &w0a, tmp_d, 3 * NWORDS_ORDER);
+	assert(fp2_is_equal(&test_pow, &w1a));
     }
 #endif
 

@@ -4,10 +4,11 @@
 #define api_h
 
 #include <sqisign_namespace.h>
+#include <encoded_sizes.h>
 
-#define CRYPTO_SECRETKEYBYTES 1377
-#define CRYPTO_PUBLICKEYBYTES 65
-#define CRYPTO_BYTES 167
+#define CRYPTO_SECRETKEYBYTES SECRETKEY_BYTES
+#define CRYPTO_PUBLICKEYBYTES PUBLICKEY_BYTES
+#define CRYPTO_BYTES SIGNATURE_BYTES
 
 #define CRYPTO_ALGNAME "SQIsign_lvl1"
 
