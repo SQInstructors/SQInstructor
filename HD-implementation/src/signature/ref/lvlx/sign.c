@@ -1,3 +1,4 @@
+#include "intbig.h"
 #include <signature.h>
 #include <tools.h>
 #include <quaternion_data.h>
@@ -205,17 +206,19 @@ protocols_sign(signature_t *sig, const public_key_t *pk, secret_key_t *sk, const
     quat_lattice_t I_solutions_left_order;
     quat_left_ideal_t I_resp;
     quat_left_ideal_t I_aux;
-    ibz_t radius, norm, norm_d, torsion;
+    ibz_t radius, norm, tmp, torsion;
     quat_alg_elem_t elem;
+    ibz_vec_4_t elem_coords;
     quat_lattice_t lattice_solutions;
     ec_basis_t B_mapped;
     ec_curve_t E_aux;
     ec_curve_init(&E_aux);
     quat_lattice_init(&lattice_solutions);
     quat_alg_elem_init(&elem);
+    ibz_vec_4_init(&elem_coords);
     ibz_init(&radius);
     ibz_init(&norm);
-    ibz_init(&norm_d);
+    ibz_init(&tmp);
     ibz_init(&torsion);
     quat_left_ideal_init(&I_resp);
     quat_left_ideal_init(&I_solutions);
@@ -247,11 +250,12 @@ protocols_sign(signature_t *sig, const public_key_t *pk, secret_key_t *sk, const
     // adjust radius by ideal norm
     ibz_mul(&radius, &radius, &I_solutions.norm);
     for (int i = 0;; i++) {
-        res = res && quat_lattice_sample_from_ball(&elem, &lattice_solutions, &QUATALG_PINFTY, &radius);
+        res = res && quat_lattice_sample_from_ball(&elem, &elem_coords, &lattice_solutions, &QUATALG_PINFTY, &radius);
         if (!res)
             goto fin;
-        quat_alg_norm(&norm, &norm_d, &elem, &QUATALG_PINFTY);
-        assert(ibz_is_one(&norm_d));
+        quat_alg_norm(&norm, &tmp, &elem, &QUATALG_PINFTY);
+        assert(ibz_is_one(&tmp));
+
         if (ibz_is_odd(&norm))
             break;
         if (i >= 256) {
@@ -263,6 +267,16 @@ protocols_sign(signature_t *sig, const public_key_t *pk, secret_key_t *sk, const
     // get I_resp from the solutions element
     quat_lideal_equivalent(&I_resp, &I_solutions, &elem, &QUATALG_PINFTY);
 
+    // Compute the scalar matrix corresponding to the action of I_resp
+    ibz_invmod(&norm, &com.secret_ideal.norm, &torsion);
+    ibz_mat_2x2_det(&tmp, &com.secret_action);
+    ibz_mod(&tmp, &tmp, &torsion);
+    ibz_mul(&tmp, &tmp, &norm);
+    ibz_mod(&tmp, &tmp, &torsion);
+    ibz_mul(&tmp, &tmp, &elem_coords[0]);
+    ibz_mod(&tmp, &tmp, &torsion);
+    ibz_to_digit_array(sig->scalar, &tmp);
+    
     // 8. Id2iso on Iresp
     //  create an O0-ideal I_aux of norm &norm = 2**a - q
     //  with q = norm(I_resp) and a = resp_len = ceil(log_2(q))
@@ -323,8 +337,9 @@ fin:;
     quat_lattice_finalize(&lattice_solutions);
     ibz_finalize(&radius);
     ibz_finalize(&norm);
-    ibz_finalize(&norm_d);
+    ibz_finalize(&tmp);
     ibz_finalize(&torsion);
+    ibz_vec_4_finalize(&elem_coords);
     quat_alg_elem_finalize(&elem);
     ibz_mat_2x2_finalize(&chall);
     ibz_mat_2x2_finalize(&change);

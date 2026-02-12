@@ -468,21 +468,21 @@ ibz_mat_4x4_eval_t(ibz_vec_4_t *res, const ibz_vec_4_t *vec, const ibz_mat_4x4_t
 void
 ibz_mat_4x4_solve_system_mod(ibz_vec_4_t *res, const ibz_mat_4x4_t *system, const ibz_vec_4_t *target, const ibz_t *mod)
 {
-  // invert
-  quat_lattice_t inv_with_denom;
-  quat_lattice_init(&inv_with_denom);
-  ibz_mat_4x4_inv_with_det_as_denom(&(inv_with_denom.basis), &(inv_with_denom.denom), system);
-  ibz_mat_4x4_mod(&inv_with_denom.basis, &inv_with_denom.basis, mod);
-  // multiply
-  ibz_mat_4x4_eval(res, &inv_with_denom.basis, target);
-  ibz_vec_4_mod(res, res, mod);
-  // scale by denominator
-  int invertible = ibz_invmod(&inv_with_denom.denom, &inv_with_denom.denom, mod);
-  assert(invertible);
-  (void)invertible;
-  ibz_vec_4_scalar_mul(res, &inv_with_denom.denom, res);
-  ibz_vec_4_mod(res, res, mod);
-  quat_lattice_finalize(&inv_with_denom);
+    // invert
+    quat_lattice_t inv_with_denom;
+    quat_lattice_init(&inv_with_denom);
+    ibz_mat_4x4_inv_with_det_as_denom(&(inv_with_denom.basis), &(inv_with_denom.denom), system);
+    ibz_mat_4x4_mod(&inv_with_denom.basis, &inv_with_denom.basis, mod);
+    // multiply
+    ibz_mat_4x4_eval(res, &inv_with_denom.basis, target);
+    ibz_vec_4_mod(res, res, mod);
+    // scale by denominator
+    int invertible = ibz_invmod(&inv_with_denom.denom, &inv_with_denom.denom, mod);
+    assert(invertible);
+    (void)invertible;
+    ibz_vec_4_scalar_mul(res, &inv_with_denom.denom, res);
+    ibz_vec_4_mod(res, res, mod);
+    quat_lattice_finalize(&inv_with_denom);
 }
 
 // quadratic forms

@@ -8,5 +8,5 @@
 #define EC_BASIS_ENCODED_BYTES 288
 #define PUBLICKEY_BYTES 97
 #define SECRETKEY_BYTES 2065
-#define SIGNATURE_BYTES 264
+#define SIGNATURE_BYTES 272
 #define TORSION_challenge_torsion 64

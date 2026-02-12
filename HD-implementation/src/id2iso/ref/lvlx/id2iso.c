@@ -296,6 +296,12 @@ _change_of_basis_matrix_tate(ibz_mat_2x2_t *mat,
 
 #ifndef NDEBUG
     {
+        digit_t a[NWORDS_ORDER], b[NWORDS_ORDER];
+        mp_sub(a, x1, x3, NWORDS_ORDER);
+	mp_mod_2exp(a, f, NWORDS_ORDER);
+        mp_sub(b, x2, x4, NWORDS_ORDER);
+	mp_mod_2exp(b, f, NWORDS_ORDER);
+	
         if (invert) {
             ec_point_t test, test2;
             ec_biscalar_mul(&test, x1, x2, f, B2, E);
@@ -304,6 +310,10 @@ _change_of_basis_matrix_tate(ibz_mat_2x2_t *mat,
 
             ec_biscalar_mul(&test, x3, x4, f, B2, E);
             ec_dbl_iter(&test2, e_diff, &B1->Q, E);
+            assert(ec_is_equal(&test, &test2));
+	    
+            ec_biscalar_mul(&test, a, b, f, B2, E);
+            ec_dbl_iter(&test2, e_diff, &B1->PmQ, E);
             assert(ec_is_equal(&test, &test2));
         } else {
             ec_point_t test;
@@ -314,7 +324,11 @@ _change_of_basis_matrix_tate(ibz_mat_2x2_t *mat,
             ec_biscalar_mul(&test, x3, x4, f, B2, E);
             ec_dbl_iter(&test, e_diff, &test, E);
             assert(ec_is_equal(&test, &(B1->Q)));
-        }
+
+	    ec_biscalar_mul(&test, a, b, f, B2, E);
+            ec_dbl_iter(&test, e_diff, &test, E);
+            assert(ec_is_equal(&test, &(B1->PmQ)));
+	}
     }
 #endif
 

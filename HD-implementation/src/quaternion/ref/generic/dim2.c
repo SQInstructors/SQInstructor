@@ -52,10 +52,10 @@ ibz_mat_2x2_det_from_ibz(ibz_t *det, const ibz_t *a11, const ibz_t *a12, const i
 void
 ibz_mat_2x2_adjugate(ibz_mat_2x2_t *adj, const ibz_mat_2x2_t *mat)
 {
-  ibz_copy(&(*adj)[0][0], &(*mat)[1][1]);
-  ibz_neg(&(*adj)[0][1], &(*mat)[0][1]);
-  ibz_neg(&(*adj)[1][0], &(*mat)[1][0]);
-  ibz_copy(&(*adj)[1][1], &(*mat)[0][0]);
+    ibz_copy(&(*adj)[0][0], &(*mat)[1][1]);
+    ibz_neg(&(*adj)[0][1], &(*mat)[0][1]);
+    ibz_neg(&(*adj)[1][0], &(*mat)[1][0]);
+    ibz_copy(&(*adj)[1][1], &(*mat)[0][0]);
 }
 
 void

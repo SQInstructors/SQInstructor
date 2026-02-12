@@ -128,12 +128,14 @@ quat_test_lat_ball_sample_helper(const quat_lattice_t *lat, const ibz_t *radius,
 {
     int res = 0;
     quat_alg_elem_t vec;
+    ibz_vec_4_t vec_c;
     ibz_t norm_d, norm_n;
     ibz_init(&norm_d);
     ibz_init(&norm_n);
     quat_alg_elem_init(&vec);
+    ibz_vec_4_init(&vec_c);
     // check return value
-    res |= !quat_lattice_sample_from_ball(&vec, lat, alg, radius);
+    res |= !quat_lattice_sample_from_ball(&vec, &vec_c, lat, alg, radius);
     // check result is in lattice
     res |= !quat_lattice_contains(NULL, lat, &vec);
     quat_alg_norm(&norm_n, &norm_d, &vec, alg);
@@ -144,6 +146,7 @@ quat_test_lat_ball_sample_helper(const quat_lattice_t *lat, const ibz_t *radius,
     ibz_finalize(&norm_d);
     ibz_finalize(&norm_n);
     quat_alg_elem_finalize(&vec);
+    ibz_vec_4_finalize(&vec_c);
     return res;
 }
 

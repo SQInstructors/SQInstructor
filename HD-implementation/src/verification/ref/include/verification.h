@@ -33,6 +33,7 @@ typedef struct signature
     uint8_t hint_aux;
     scalar_mtx_2x2_t mat_B_aux_can_to_B_aux; /// the matrix of the desired basis on the aux curve
     uint8_t hint_com;                        // hint for E_com
+    scalar_t scalar;                         // correction scalar response isogeny
     uint16_t resp_length;                    /// length of the response as 22 isogenies
 } signature_t;
 

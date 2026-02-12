@@ -711,12 +711,14 @@ void quat_lattice_index(ibz_t *index, const quat_lattice_t *sublat, const quat_l
  * Sample a uniform non-zero vector of norm ≤ `radius` from the lattice.
  *
  * @param res Output: sampled quaternion from the lattice
+ * @param res_coords Output: cordinates of res in the lattice basis
  * @param lattice Input lattice
  * @param alg The quaternion algebra
  * @param radius The ball radius (quaternion norm)
  * @return 0 if an error occurred (ball too small or RNG error), 1 otherwise
  */
 int quat_lattice_sample_from_ball(quat_alg_elem_t *res,
+                                  ibz_vec_4_t *res_coords,
                                   const quat_lattice_t *lattice,
                                   const quat_alg_t *alg,
                                   const ibz_t *radius);

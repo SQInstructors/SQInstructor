@@ -441,11 +441,15 @@ protocols_verify(signature_t *sig, const public_key_t *pk, const unsigned char *
         return 0;
     }
 
-    // Compare B_com_pushed and B_com: they must be linearly dependent
-    scalar_t r1, r2, s1, s2;
-    ec_dlog_2_weil(r1, r2, s1, s2, &B_com, &B_com_pushed, &E_com, TORSION_challenge_torsion);
+    // Multiply B_com by signature's scalar
+    ec_mul(&B_com.P, sig->scalar, TORSION_challenge_torsion, &B_com.P, &E_com);
+    ec_mul(&B_com.Q, sig->scalar, TORSION_challenge_torsion, &B_com.Q, &E_com);
+    ec_mul(&B_com.PmQ, sig->scalar, TORSION_challenge_torsion, &B_com.PmQ, &E_com);
 
-    if (!mp_is_zero(r2, NWORDS_ORDER) || !mp_is_zero(s1, NWORDS_ORDER) || mp_compare(r1, s2, NWORDS_ORDER) != 0) {
+    // Compare B_com_pushed and B_com: they must be equal
+    if (!ec_is_equal(&B_com.P, &B_com_pushed.P)
+        || !ec_is_equal(&B_com.Q, &B_com_pushed.Q)
+        || !ec_is_equal(&B_com.PmQ, &B_com_pushed.PmQ)) {
         debug_print("Response does not match challenge");
         return 0;
     }

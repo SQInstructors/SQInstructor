@@ -179,6 +179,10 @@ signature_to_bytes(byte_t *enc, const signature_t *sig)
     *enc++ = sig->hint_aux;
     *enc++ = sig->hint_com;
 
+    nbytes = (TORSION_challenge_torsion + 7) / 8;
+    encode_digits(enc, sig->scalar, nbytes);
+    enc += nbytes;
+    
     assert(enc - start == SIGNATURE_BYTES);
 }
 void
@@ -206,5 +210,9 @@ signature_from_bytes(signature_t *sig, const byte_t *enc)
     sig->hint_aux = *enc++;
     sig->hint_com = *enc++;
 
+    nbytes = (TORSION_challenge_torsion + 7) / 8;
+    decode_digits(sig->scalar, enc, nbytes, NWORDS_ORDER);
+    enc += nbytes;
+    
     assert(enc - start == SIGNATURE_BYTES);
 }

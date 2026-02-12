@@ -56,6 +56,7 @@ quat_lattice_bound_parallelogram(ibz_vec_4_t *box, ibz_mat_4x4_t *U, const ibz_m
 
 int
 quat_lattice_sample_from_ball(quat_alg_elem_t *res,
+                              ibz_vec_4_t *res_coords,
                               const quat_lattice_t *lattice,
                               const quat_alg_t *alg,
                               const ibz_t *radius)
@@ -67,8 +68,6 @@ quat_lattice_sample_from_ball(quat_alg_elem_t *res,
     ibz_mat_4x4_t U, G;
     ibz_mat_4x4_init(&U);
     ibz_mat_4x4_init(&G);
-    ibz_vec_4_t x;
-    ibz_vec_4_init(&x);
     ibz_t rad, tmp;
     ibz_init(&rad);
     ibz_init(&tmp);
@@ -96,19 +95,19 @@ quat_lattice_sample_from_ball(quat_alg_elem_t *res,
         // Sample vector
         for (int i = 0; i < 4; i++) {
             if (ibz_is_zero(&box[i])) {
-                ibz_copy(&x[i], &ibz_const_zero);
+                ibz_copy(&(*res_coords)[i], &ibz_const_zero);
             } else {
                 ibz_add(&tmp, &box[i], &box[i]);
-                ok &= ibz_rand_interval(&x[i], &ibz_const_zero, &tmp);
-                ibz_sub(&x[i], &x[i], &box[i]);
+                ok &= ibz_rand_interval(&(*res_coords)[i], &ibz_const_zero, &tmp);
+                ibz_sub(&(*res_coords)[i], &(*res_coords)[i], &box[i]);
                 if (!ok)
                     goto err;
             }
         }
         // Map to parallelogram
-        ibz_mat_4x4_eval_t(&x, &x, &U);
+        ibz_mat_4x4_eval_t(res_coords, res_coords, &U);
         // Evaluate quadratic form
-        quat_qf_eval(&tmp, &G, &x);
+        quat_qf_eval(&tmp, &G, res_coords);
 #ifndef NDEBUG
         cnt++;
         if (cnt % 100 == 0)
@@ -117,7 +116,7 @@ quat_lattice_sample_from_ball(quat_alg_elem_t *res,
     } while (ibz_is_zero(&tmp) || (ibz_cmp(&tmp, &rad) > 0));
 
     // Evaluate linear combination
-    ibz_mat_4x4_eval(&(res->coord), &(lattice->basis), &x);
+    ibz_mat_4x4_eval(&(res->coord), &(lattice->basis), res_coords);
     ibz_copy(&(res->denom), &(lattice->denom));
     quat_alg_normalize(res);
 
@@ -131,7 +130,6 @@ quat_lattice_sample_from_ball(quat_alg_elem_t *res,
 err:
     ibz_finalize(&rad);
     ibz_finalize(&tmp);
-    ibz_vec_4_finalize(&x);
     ibz_mat_4x4_finalize(&U);
     ibz_mat_4x4_finalize(&G);
     ibz_vec_4_finalize(&box);
